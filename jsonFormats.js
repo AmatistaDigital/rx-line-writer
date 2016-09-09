@@ -1,4 +1,3 @@
-// './BDPJ_01042016/MERCANTIL_PERSONASFISICAS.TXT'
 const mercantilPersonasFisicas = (line) => {
   const splitLine = line.split(';');
   return {
@@ -72,5 +71,27 @@ const mercantilNombramientos = (line) => {
     porcentajeCuota     : splitLine[23],
     puestoVacante       : splitLine[24],
     direccion           : splitLine[25],
+  };
+};
+
+const mercantilCapital = (line) => {
+  const splitLine = line.split(';');
+  return {
+    tipoId            : splitLine[0],
+    claseId           : splitLine[1],
+    consecutivoId     : splitLine[2],
+    consecutivoTitulo : splitLine[3],
+    claseAccion       : splitLine[4],
+    tipoCapital       : splitLine[5],
+    tipoMoneda        : splitLine[6],
+    monto             : splitLine[7],
+    cantidad          : splitLine[8],
+    tomo              : splitLine[9],
+    asiento           : splitLine[10],
+    consecutivo       : splitLine[11],
+    secuencia         : splitLine[12],
+    fechaInscripcion  : splitLine[13],
+    horaInscripcion   : splitLine[14],
+    descripcion       : splitLine[15],
   };
 };
