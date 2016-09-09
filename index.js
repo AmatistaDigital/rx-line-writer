@@ -4,7 +4,7 @@ const _ = require('lodash');
 const db = require('./db');
 
 const rl = readline.createInterface({
-  input: require('fs').createReadStream('./BDPJ_01042016/MERCANTIL_PERSONASFISICAS.TXT'),
+  input : require('fs').createReadStream('./BDPJ_01042016/MERCANTIL_PERSONASFISICAS.TXT'),
 });
 const saveBatch = (list) => {
   db.saveBatch({
@@ -18,25 +18,32 @@ const saveBatch = (list) => {
         nombre        : splitLine[4],
         apellido1     : splitLine[5],
         apellido2     : splitLine[6],
-      }
+      };
     }),
     mongoURL       : 'mongodb://localhost:27017/helix_nebula',
     collectionName : 'mercantil.personaFisica',
   }).then(() => {
+    // eslint-disable-next-line
     console.log('batch saved');
   }).catch((err) => {
+    // eslint-disable-next-line
     console.log('batch ERROR');
+    // eslint-disable-next-line
     console.log(err);
-  })
-}
+  });
+};
 
-const source = Rx.Observable.fromEvent(rl, 'line')
+Rx.Observable.fromEvent(rl, 'line')
     .takeUntil(Rx.Observable.fromEvent(rl, 'close'))
     .bufferTime(500)
     .subscribe(
       saveBatch,
-      err => console.log("Error: %s", err),
+      err => {
+        // eslint-disable-next-line
+        console.log("Error: %s", err)
+      },
       () => {
+        // eslint-disable-next-line
         console.log('collection successfully saved.');
       }
     );
