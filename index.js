@@ -2,38 +2,43 @@ const Rx = require('rxjs/Rx');
 const readline = require('readline');
 const _ = require('lodash');
 const db = require('./db');
+const chalk = require('chalk');
+
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
 const rl = readline.createInterface({
-  input : require('fs').createReadStream('../BDPJ_01042016/MERCANTIL_CAPITALES.TXT'),
+  input : require('fs').createReadStream('../BDBM_01042016/BMFD022.TXT'),
 });
 const saveBatch = (list) => {
+  const fieldNames = ['tomo', 'asiento',
+  'secuencia', 'accionEfectuada', 'tipoMovimiento',
+  'pesoAnotacion', 'codigoUsuario',
+  'ultimaSubsecuencia', 'fechaAnotacion', 'horaAnotacion',
+  'motivoOperacion', 'codigoUsuarioCancela',
+  'fechaCancelacion', 'timeStamp'];
   db.saveBatch({
     list : _.map(list, (line) =>{
       const splitLine = line.split(';');
-      return {
-        tipoId            : splitLine[0],
-        claseId           : splitLine[1],
-        consecutivoId     : splitLine[2],
-        consecutivoTitulo : splitLine[3],
-        claseAccion       : splitLine[4],
-        tipoCapital       : splitLine[5],
-        tipoMoneda        : splitLine[6],
-        monto             : splitLine[7],
-        cantidad          : splitLine[8],
-        tomo              : splitLine[9],
-        asiento           : splitLine[10],
-        consecutivo       : splitLine[11],
-        secuencia         : splitLine[12],
-        fechaInscripcion  : splitLine[13],
-        horaInscripcion   : splitLine[14],
-        descripcion       : splitLine[15],
-      };
+      const object = {};
+      _.each(fieldNames, (fieldName, i) => {
+        object[fieldName] = splitLine[i];
+      });
+      return object;
     }),
     mongoURL       : 'mongodb://localhost:27017/helix_nebula',
-    collectionName : 'mercantil.capital',
+    collectionName : 'bienmueble.anotacionCancelada',
   }).then(() => {
     // eslint-disable-next-line
-    console.log('batch saved');
+    const randomNumber = getRandomInt(0, 10);
+    if (randomNumber < 2) {
+      console.log(chalk.green('batch saved'));
+    } else if (randomNumber < 5 ) {
+      console.log(chalk.red('batch saved'));
+    } else if (randomNumber < 7 ) {
+      console.log(chalk.blue('batch saved'));
+    } else {
+      console.log(chalk.yellow('batch saved'));
+    }
   }).catch((err) => {
     // eslint-disable-next-line
     console.log('batch ERROR');
@@ -44,7 +49,7 @@ const saveBatch = (list) => {
 
 Rx.Observable.fromEvent(rl, 'line')
     .takeUntil(Rx.Observable.fromEvent(rl, 'close'))
-    .bufferTime(500)
+    .bufferTime(150)
     .subscribe(
       saveBatch,
       err => {
