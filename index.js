@@ -7,26 +7,48 @@ const chalk = require('chalk');
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
 const rl = readline.createInterface({
-  input : require('fs').createReadStream('../BDBM_01042016/BMFD022.TXT'),
+  input : require('fs').createReadStream('../BDBM_01042016/BMFD016.TXT'),
 });
 const saveBatch = (list) => {
-  const fieldNames = ['tomo', 'asiento',
-  'secuencia', 'accionEfectuada', 'tipoMovimiento',
-  'pesoAnotacion', 'codigoUsuario',
-  'ultimaSubsecuencia', 'fechaAnotacion', 'horaAnotacion',
-  'motivoOperacion', 'codigoUsuarioCancela',
-  'fechaCancelacion', 'timeStamp'];
+  const fieldNames = ['tipoBien',
+  'claseBien',
+  'codigoBien',
+  'numeroBien',
+  'codigoMarca',
+  'anoFabricacion',
+  'estilo',
+  'codigoCategoria',
+  'tipoBienInmueble',
+  'numeroChasis',
+  'numeroSerie',
+  'codigoCarroceria',
+  'capacidad',
+  'pesoNeto',
+  'pesoBruto',
+  'pesoRemolque',
+  'pesoVacio',
+  'codigoColor',
+  'codigoTraccion',
+  'VIN',
+  'tipoCabina',
+  'tipoTecho',
+  'numeroEjes',
+  'longitudBien',
+  'refaccionado',
+  'convertido',
+  'timeStamp',
+  'claseTributaria'];
   db.saveBatch({
     list : _.map(list, (line) =>{
       const splitLine = line.split(';');
       const object = {};
       _.each(fieldNames, (fieldName, i) => {
-        object[fieldName] = splitLine[i];
+        object[fieldName] = splitLine[i].replace(/["']/g, '').trim();
       });
       return object;
     }),
     mongoURL       : 'mongodb://localhost:27017/helix_nebula',
-    collectionName : 'bienmueble.anotacionCancelada',
+    collectionName : 'bienmueble.vehiculo',
   }).then(() => {
     // eslint-disable-next-line
     const randomNumber = getRandomInt(0, 10);
@@ -49,7 +71,7 @@ const saveBatch = (list) => {
 
 Rx.Observable.fromEvent(rl, 'line')
     .takeUntil(Rx.Observable.fromEvent(rl, 'close'))
-    .bufferTime(150)
+    .bufferTime(500)
     .subscribe(
       saveBatch,
       err => {
